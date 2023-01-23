@@ -13,5 +13,3 @@
     image: "", // รูปหลัก
     }   
  ```
- # รูปตัวอย่าง
- ![image](https://user-images.githubusercontent.com/69198341/190901275-049e7bb6-1947-4e05-b01f-c63c0c7bfd31.png)
