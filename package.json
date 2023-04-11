@@ -1,19 +1,14 @@
 {
-  "dependencies": {
-    "discord.js": "^14.3.0",
-    "edit-json-file": "^1.7.0"
-  },
   "name": "dc_whitelist",
   "description": "Discord Whitelist",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "start": "node index.js"
   },
   "keywords": [
     "whitelist"
   ],
-  "author": "http#7824",
+  "author": "HELLO JJ#2631",
   "license": "MIT"
 }

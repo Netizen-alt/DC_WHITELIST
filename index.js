@@ -10,12 +10,12 @@ const {
 } = require("discord.js");
 const editJsonFile = require("edit-json-file");
 const config = require("./config");
-
+const fs = require('fs');
 const client = new Client({
   intents: ["Guilds", "GuildMembers"],
 });
 
-client.on("ready", () => {
+client.on("ready", async () => {
   console.log("BROKEN BOT WHITE LIST");
   let channel = `${config.channelId}`;
   const embed = new EmbedBuilder()
@@ -38,10 +38,30 @@ client.on("ready", () => {
     .setEmoji(`${config.main.button_emoji}`)
     .setStyle(`${config.main.button_style}`);
   const row = new ActionRowBuilder().addComponents(x);
+  const rawData = fs.readFileSync('id.json');
+  const data = JSON.parse(rawData);
+  const channels = await client.channels.fetch(config.channelId)
 
-  client.channels.cache
+  if(!data.messageID){
+    const message = await client.channels.cache
     .get(channel)
     .send({ embeds: [embed], components: [row] });
+    data.messageID = message.id;
+    const newData = JSON.stringify(data);
+    fs.writeFileSync('id.json', newData);
+  }else{
+    try {
+      const messages =  await channels.messages.fetch(data.messageID)
+      messages.edit({ embeds: [embed], components: [row] })
+    } catch (s) {
+      data.messageID = '';
+      const newData = JSON.stringify(data);
+      fs.writeFileSync('id.json', newData);
+      await client.channels.cache
+    .get(channel)
+    .send({ embeds: [embed], components: [row] });
+    }
+  }
 });
 
 client.on("interactionCreate", async (interaction) => {
@@ -138,7 +158,6 @@ client.on("interactionCreate", async (interaction) => {
         "อายุ OC IC": age_all,
         "เฟส IC": facebook_ic,
       };
-
       data.push(x);
       file.set("data", data);
       file.save();
