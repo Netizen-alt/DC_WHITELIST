@@ -2,6 +2,17 @@
 + [ วิธีตั้งค่า EMBED เบื้องต้นง่ายๆ ]
 + [ติดต่อ](https://discord.gg/AypUvAdDHs)
 
+### how to install and run 
+ + Req: [NodeJS](https://nodejs.org/en/download)
+ + Req: [VSCODE](https://code.visualstudio.com/download)
+ + Req: [TOKENBOT](https://discord.com/developers/)
+ 
+ 
+```js
+npm install && npm i
+
+node index.js && node .
+```
  ```js 
 module.exports = {
   token:
@@ -43,3 +54,4 @@ module.exports = {
  
  + อัพเดทเก็บข้อมูล และ การรันใหม่ จะไมส่งข้อมูลซ้ำที่เดิมแก้ไข ERROR
  ผู้แก้ไขข้อมูล **BALLZAZA#4481**
+ 
