@@ -1,5 +1,6 @@
 # DC_WHITELIST
 + [ วิธีตั้งค่า EMBED เบื้องต้นง่ายๆ ]
++ [ติดต่อ](https://discord.gg/AypUvAdDHs)
 
  ```js 
 module.exports = {
