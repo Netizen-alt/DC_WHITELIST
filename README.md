@@ -1,6 +1,6 @@
 # DC_WHITELIST
 + [ วิธีตั้งค่า EMBED เบื้องต้นง่ายๆ ]
-+ [ติดต่อ](https://discord.gg/AypUvAdDHs)
++ [ติดต่อ](https://discord.gg/EB9CFWjcFh)
 
 ### how to install and run 
  + Req: [NodeJS](https://nodejs.org/en/download)
