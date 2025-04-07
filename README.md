@@ -13,7 +13,8 @@ npm install && npm i
 
 node index.js && node .
 ```
- ```js 
+
+```js 
 const { ButtonStyle } = require('discord.js');
 
 module.exports = {
@@ -58,7 +59,7 @@ module.exports = {
   }
 };
 
- ```
+```
  
  
  ผู้แก้ไขข้อมูล **BALLZAZA#4481**
