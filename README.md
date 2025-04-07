@@ -1,8 +1,8 @@
-# DC_WHITELIST
+# ระบบ DISCORD WHITELIST FOR FIVEM
 + [ วิธีตั้งค่า EMBED เบื้องต้นง่ายๆ ]
 + [ติดต่อ](https://discord.gg/EB9CFWjcFh)
 
-### how to install and run 
+### วิธีการติดตั้งและรัน
  + Req: [NodeJS](https://nodejs.org/en/download)
  + Req: [VSCODE](https://code.visualstudio.com/download)
  + Req: [TOKENBOT](https://discord.com/developers/)
