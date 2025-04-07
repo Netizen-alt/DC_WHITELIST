@@ -1,37 +1,43 @@
-const { ButtonStyle } = require('discord.js')
-module.exports = {
-  token:
-    "", // โทเคนบอท
+const { ButtonStyle } = require('discord.js');
 
-  roleAdmin: "", //ยศแอดมิน
-  guild: [""], //เซิฟเวอร์
-  WhitelistRole: "", //ยศไวริส
-  channelId: "", //ห้องสำหรับกดรับ
-  channelId_Log: "", // ห้องสำหรับข้อมูล
-  // setting ส่วนแรกคือหน้ากด
+module.exports = {
+  // ตั้งค่าโทเคนและข้อมูลเซิร์ฟเวอร์
+  token: "",                       // โทเคนของบอท
+  roleAdmin: "",                   // ไอดียศแอดมิน
+  guild: [""],                     // ไอดีเซิร์ฟเวอร์
+  WhitelistRole: "",               // ไอดียศไวท์ลิสต์
+  channelId: "",                   // ไอดีห้องกดรับยศ
+  channelId_Log: "",               // ไอดีห้องบันทึกข้อมูล
+
+  // ตั้งค่าหน้าข้อความและปุ่มหลัก
   main: {
-    button_msg: "กดปุ่มเพื่อลงทะเบียนไวริส", // ข้อความปุ่ม
-    button_emoji: "✅", // อิโมจิเท่านั้น สามารถใช้อิโมจิพิเศษได้ ตัวอย่าง `<a:784488608782483477:853402922037280780>`
-    button_style: ButtonStyle.Danger, //จำเป็นต้องมี ButtonStyle อยุ่ข้างหน้าเสมอ มีทั้งหมด 4สี ได้แก่ Primary สีน้ำเงิน , Secondary = เทา , Success = เขียว ,Danger =แดง 
-    title: "test", // ชื่อหัวข้อ
-    iconURL: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png", // รูปไอคอน
-    Description: "**FF \n\n กรุณากรอกข้อมูลให้ครบ [มิเช่นนั้น] ทางเราจะไม่รับเรื่องดังที่สมัครเข้ามา**", // คำอธิบาย
-    colors: "#ff0003", // #a7e7ff -> [R, G, B] // 12942973
-    image: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png", // รูปหลัก
+    title: "test",                 // ชื่อหัวข้อข้อความ
+    iconURL: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png", // ไอคอนหัวข้อ
+    Description: "**FF \n\n กรุณากรอกข้อมูลให้ครบ [มิเช่นนั้น] ทางเราจะไม่รับเรื่องดังที่สมัครเข้ามา**",
+    colors: "#ff0003",             // สีของข้อความ
+    image: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png", // รูปภาพหลัก
+
+    button_msg: "กดปุ่มเพื่อลงทะเบียนไวท์ลิสต์",  // ข้อความปุ่ม
+    button_emoji: "✅",                             // อิโมจิปุ่ม
+    button_style: ButtonStyle.Danger,              // สีปุ่ม (Primary น้ำเงิน, Secondary เทา, Success เขียว, Danger แดง)
   },
-  //ชื่อของหัวข้อหลังกดปุ่ม
+
+  // ตั้งค่าหน้ากรอกข้อมูล
   modals: {
-    title: "test"
+    title: "test"                   // ชื่อหัวข้อหน้ากรอกข้อมูล
   },
-  //setting หลังกรอกข้อมูลเสร็จ
+
+  // ข้อความตอบกลับผู้ใช้หลังกรอกข้อมูล
   reply_submit: {
-    title: "test", // ชื่อหัวข้อ
-    iconURL: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png", // รูปไอคอน
-    colors: "#41ff00", // #a7e7ff -> [R, G, B] // 12942973
-    Description: "**คุณได้ทำการยืนยันเป็นที่เรียบร้อย รอทาง**"
+    title: "test",                 // ชื่อหัวข้อข้อความตอบกลับ
+    iconURL: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png", // ไอคอนหัวข้อ
+    colors: "#41ff00",             // สีข้อความ
+    Description: "**คุณได้ทำการยืนยันเป็นที่เรียบร้อย รอทางแอดมินตรวจสอบ**"
   },
+
+  // ข้อความแจ้งเตือนไปยังแอดมิน
   reply_admin: {
-    title: "test", // ชื่อหัวข้อ
-    iconURL: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png", // รูปไอคอน
+    title: "test",                 // ชื่อหัวข้อข้อความแจ้งแอดมิน
+    iconURL: "https://cdn.discordapp.com/attachments/988800716212674570/1082762974520946758/logo.png" // ไอคอนหัวข้อ
   }
 };
