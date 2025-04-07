@@ -1,238 +1,166 @@
-const {
-  Client,
-  EmbedBuilder,
-  ButtonBuilder,
-  ActionRowBuilder,
-  ButtonStyle,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-} = require("discord.js");
+const { Client, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 const editJsonFile = require("edit-json-file");
 const config = require("./config");
-const fs = require('fs');
-const client = new Client({
-  intents: ["Guilds", "GuildMembers"],
-});
+const fs = require("fs");
 
-client.on("ready", async () => {
-  console.log("BROKEN BOT WHITE LIST");
-  let channel = `${config.channelId}`;
+const client = new Client({ intents: ["Guilds", "GuildMembers"] });
+
+client.on("ready", setupInitialMessage);
+client.on("interactionCreate", handleInteraction);
+
+async function setupInitialMessage() {
+  console.log("✅ BOT IS ONLINE");
+  const channel = client.channels.cache.get(config.channelId);
+
   const embed = new EmbedBuilder()
-    .setAuthor({
-      name: `${config.main.title}`,
-      iconURL: `${config.main.iconURL}`,
-      url: null,
-    })
-    .setDescription(`${config.main.Description}`)
+    .setAuthor({ name: config.main.title, iconURL: config.main.iconURL })
+    .setDescription(config.main.Description)
     .setColor("Red")
-    .setImage(`${config.main.image}`)
-    .setFooter({
-      text: `BROKEN BOT`,
-      iconURL:
-        "https://cdn.discordapp.com/attachments/1061277003044634757/1066488529431056474/icona.png",
-    });
-  const x = new ButtonBuilder()
+    .setImage(config.main.image)
+    .setFooter({ text: "BROKEN BOT", iconURL: config.main.footerIcon });
+
+  const verifyButton = new ButtonBuilder()
     .setCustomId("buttonVerify")
-    .setLabel(`${config.main.button_msg}`)
-    .setEmoji(`${config.main.button_emoji}`)
-    .setStyle(`${config.main.button_style}`);
-  const row = new ActionRowBuilder().addComponents(x);
-  const rawData = fs.readFileSync('id.json');
-  const data = JSON.parse(rawData);
-  const channels = await client.channels.fetch(config.channelId)
+    .setLabel(config.main.button_msg)
+    .setEmoji(config.main.button_emoji)
+    .setStyle(config.main.button_style);
 
-  if(!data.messageID){
-    const message = await client.channels.cache
-    .get(channel)
-    .send({ embeds: [embed], components: [row] });
-    data.messageID = message.id;
-    const newData = JSON.stringify(data);
-    fs.writeFileSync('id.json', newData);
-  }else{
-    try {
-      const messages =  await channels.messages.fetch(data.messageID)
-      messages.edit({ embeds: [embed], components: [row] })
-    } catch (s) {
-      data.messageID = '';
-      const newData = JSON.stringify(data);
-      fs.writeFileSync('id.json', newData);
-      await client.channels.cache
-    .get(channel)
-    .send({ embeds: [embed], components: [row] });
-    }
+  const actionRow = new ActionRowBuilder().addComponents(verifyButton);
+
+  let messageData = JSON.parse(fs.readFileSync("id.json"));
+
+  try {
+    const existingMessage = await channel.messages.fetch(messageData.messageID);
+    existingMessage.edit({ embeds: [embed], components: [actionRow] });
+  } catch (error) {
+    const newMessage = await channel.send({ embeds: [embed], components: [actionRow] });
+    messageData.messageID = newMessage.id;
+    fs.writeFileSync("id.json", JSON.stringify(messageData));
   }
-});
+}
 
-client.on("interactionCreate", async (interaction) => {
-  let channel = `${config.channelId_Log}`;
-  if (interaction.isButton()) {
-    if (interaction.customId == "buttonVerify") {
-      let lel = new ModalBuilder()
-        .setTitle(`${config.modals.title}`)
-        .setCustomId("model_function");
+async function handleInteraction(interaction) {
+  if (interaction.isButton()) return handleButtonInteraction(interaction);
+  if (interaction.isModalSubmit()) return handleModalSubmission(interaction);
+}
 
-      //DEBUG MODALS
-      let steam_link = new TextInputBuilder()
-        .setCustomId("steam_link")
-        .setLabel("ลิงค์สตรีม".substring(0, 100))
-        .setStyle(TextInputStyle.Short)
-        .setRequired(true);
-
-      let username_oc = new TextInputBuilder()
-        .setCustomId("username_oc")
-        .setLabel("ชื่อ OC ".substring(0, 45))
-        .setStyle(TextInputStyle.Short);
-      let username_ic = new TextInputBuilder()
-        .setCustomId("username_ic")
-        .setLabel("ชื่อ IC ".substring(0, 45))
-        .setStyle(TextInputStyle.Short);
-
-      let age_oc = new TextInputBuilder()
-        .setCustomId("age_oc")
-        .setLabel("อายุ OC IC".substring(0, 45))
-        .setStyle(TextInputStyle.Paragraph);
-
-      let facebook_ic = new TextInputBuilder()
-        .setCustomId("facebook_ic")
-        .setLabel("เฟส IC".substring(0, 45))
-        .setStyle(TextInputStyle.Short)
-        .setRequired(true);
-
-      let row_all = new ActionRowBuilder().addComponents(steam_link);
-      let row_all2 = new ActionRowBuilder().addComponents(username_oc);
-      let row_all3 = new ActionRowBuilder().addComponents(age_oc);
-      let row_all5 = new ActionRowBuilder().addComponents(username_ic);
-      let row_all4 = new ActionRowBuilder().addComponents(facebook_ic);
-      lel.addComponents(row_all, row_all2, row_all5, row_all3, row_all4);
-      await interaction.showModal(lel);
-    }
-
-    // funtion confirm roles
-    if (interaction.customId == "addRoles") {
-      interaction.deferUpdate();
-      const WhitelistRole = `${config.WhitelistRole}`;
-      const m = interaction.message?.mentions.members.first();
-      m.roles.add(WhitelistRole);
-
-      const addRoles = new ButtonBuilder()
-        .setCustomId("addRoles")
-        .setLabel("✅ ยืนยัน")
-        .setStyle(ButtonStyle.Primary)
-        .setDisabled(true);
-
-      const Cancel = new ButtonBuilder()
-        .setCustomId("Cancel")
-        .setLabel("❌ ยกเลืก")
-        .setStyle(ButtonStyle.Danger)
-        .setDisabled(true);
-      const row = new ActionRowBuilder().addComponents(addRoles, Cancel);
-      interaction.message.edit({
-        components: [row],
-      });
-    }
-    // funtion cancel roles
-    if (interaction.customId == "Cancel") {
-      //ปุ่มหาย
-      interaction.message.edit({
-        components: [],
-      });
-    }
+async function handleButtonInteraction(interaction) {
+  switch (interaction.customId) {
+    case "buttonVerify":
+      return showVerifyModal(interaction);
+    case "addRoles":
+      return confirmRoles(interaction);
+    case "Cancel":
+      return cancelInteraction(interaction);
   }
-  if (interaction.isModalSubmit()) {
-    try {
-      const steam_link = interaction.fields.getTextInputValue("steam_link");
-      const username_ic = interaction.fields.getTextInputValue("username_ic");
-      const username_oc = interaction.fields.getTextInputValue("username_oc");
-      const age_all = interaction.fields.getTextInputValue("age_oc");
-      const facebook_ic = interaction.fields.getTextInputValue("facebook_ic");
-      const m = interaction.member.user.username;
-      console.log(m);
-      let file = editJsonFile(`${process.cwd()}/config.json`);
-      let data = file.get().data;
-      let x = {
-        ชื่อดิสคอร์ด: `${interaction.member.user.username}#${interaction.member.user.discriminator}`,
-        สตรีมลิงค์: steam_link,
-        "ชื่อ OC": username_oc,
-        "ชื่อ IC": username_ic,
-        "อายุ OC IC": age_all,
-        "เฟส IC": facebook_ic,
-      };
-      data.push(x);
-      file.set("data", data);
-      file.save();
+}
 
-      const embed = new EmbedBuilder()
-        .setAuthor({
-          name: `${config.reply_submit.title}`,
-          iconURL: `${config.reply_submit.iconURL}`,
-          url: null,
-        })
-        .setDescription(
-          `${config.reply_submit.Description} <@&${config.roleAdmin}> `
-        )
-        .setColor(`${config.reply_submit.colors}`)
-        .setFooter({
-          text: "BROKEN BOT",
-          iconURL:
-            "https://cdn.discordapp.com/attachments/1061277003044634757/1066488529431056474/icona.png",
-        })
-        .setTimestamp(Date.now());
+async function showVerifyModal(interaction) {
+  const modal = new ModalBuilder().setTitle(config.modals.title).setCustomId("model_function");
 
-      interaction.reply({
-        embeds: [embed],
-        ephemeral: true,
-      });
+  modal.addComponents(
+    createTextInput("steam_link", "ลิงค์สตรีม", true),
+    createTextInput("username_oc", "ชื่อ OC"),
+    createTextInput("username_ic", "ชื่อ IC"),
+    createTextInput("age_oc", "อายุ OC IC"),
+    createTextInput("facebook_ic", "เฟส IC")
+  );
 
-      const embedadmin = new EmbedBuilder()
-        .setDescription(
-          `** ข้อมูลทั้งหมด**\n
-          **ดิสคอร์ดของผู้ส่ง**\n
-          <@${interaction.member?.id}>\n
-          ลิงค์สตรีม
-          \`\`\`🔗 ${steam_link}\`\`\`
-          ชื่อ OC IC
-          \`\`\`👤 ${username_oc} & ${username_ic}\`\`\`
-          อายุ OC IC
-          \`\`\`👤 ${age_all}\`\`\`
-          เฟส IC
-          [ลิงค์เฟส](${facebook_ic})
-        `
-        )
-        .setAuthor({
-          name: `${config.reply_admin.title}`,
-          iconURL: `${config.reply_admin.iconURL}`,
-          url: null,
-        })
-        .setColor("Green")
-        .setFooter({
-          text: "BROKEN BOT",
-          iconURL:
-            "https://cdn.discordapp.com/attachments/1061277003044634757/1066488529431056474/icona.png",
-        })
-        .setTimestamp(Date.now());
-      const addRoles = new ButtonBuilder()
-        .setCustomId("addRoles")
-        .setLabel("✅ ยืนยัน")
-        .setStyle(ButtonStyle.Primary);
+  await interaction.showModal(modal);
+}
 
-      const Cancel = new ButtonBuilder()
-        .setCustomId("Cancel")
-        .setLabel("❌ ยกเลืก")
-        .setStyle(ButtonStyle.Danger);
+function createTextInput(customId, label, required = false) {
+  return new ActionRowBuilder().addComponents(
+    new TextInputBuilder().setCustomId(customId).setLabel(label).setStyle(TextInputStyle.Short).setRequired(required)
+  );
+}
 
-      const rowx = new ActionRowBuilder().addComponents(addRoles, Cancel);
+async function confirmRoles(interaction) {
+  await interaction.deferUpdate();
+  const member = interaction.message?.mentions.members.first();
+  if (member) member.roles.add(config.WhitelistRole);
 
-      interaction.guild.channels.cache.get(channel).send({
-        content: `ส่งข้อมูลโดย: <@${interaction.member?.id}>`,
-        embeds: [embedadmin],
-        components: [rowx],
-        ephemeral: true,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-});
+  updateInteractionButtons(interaction, true);
+}
+
+async function cancelInteraction(interaction) {
+  updateInteractionButtons(interaction, false, true);
+}
+
+function updateInteractionButtons(interaction, disableConfirm = false, remove = false) {
+  if (remove) return interaction.message.edit({ components: [] });
+
+  const confirmButton = new ButtonBuilder()
+    .setCustomId("addRoles")
+    .setLabel("✅ ยืนยัน")
+    .setStyle(ButtonStyle.Primary)
+    .setDisabled(disableConfirm);
+
+  const cancelButton = new ButtonBuilder()
+    .setCustomId("Cancel")
+    .setLabel("❌ ยกเลิก")
+    .setStyle(ButtonStyle.Danger)
+    .setDisabled(disableConfirm);
+
+  const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
+
+  interaction.message.edit({ components: [row] });
+}
+
+async function handleModalSubmission(interaction) {
+  const submissionData = extractSubmissionData(interaction);
+  saveSubmissionData(submissionData);
+
+  await interaction.reply({
+    embeds: [createUserReplyEmbed()],
+    ephemeral: true,
+  });
+
+  sendAdminLog(interaction, submissionData);
+}
+
+function extractSubmissionData(interaction) {
+  const fields = interaction.fields;
+  return {
+    ชื่อดิสคอร์ด: `${interaction.member.user.username}#${interaction.member.user.discriminator}`,
+    สตรีมลิงค์: fields.getTextInputValue("steam_link"),
+    "ชื่อ OC": fields.getTextInputValue("username_oc"),
+    "ชื่อ IC": fields.getTextInputValue("username_ic"),
+    "อายุ OC IC": fields.getTextInputValue("age_oc"),
+    "เฟส IC": fields.getTextInputValue("facebook_ic"),
+  };
+}
+
+function saveSubmissionData(data) {
+  let file = editJsonFile("config.json");
+  let existingData = file.get("data") || [];
+  existingData.push(data);
+  file.set("data", existingData).save();
+}
+
+function createUserReplyEmbed() {
+  return new EmbedBuilder()
+    .setAuthor({ name: config.reply_submit.title, iconURL: config.reply_submit.iconURL })
+    .setDescription(`${config.reply_submit.Description} <@&${config.roleAdmin}>`)
+    .setColor(config.reply_submit.colors)
+    .setTimestamp();
+}
+
+function sendAdminLog(interaction, submissionData) {
+  const logChannel = interaction.guild.channels.cache.get(config.channelId_Log);
+  logChannel.send({
+    content: `ส่งข้อมูลโดย: <@${interaction.member?.id}>`,
+    embeds: [new EmbedBuilder()
+      .setAuthor({ name: config.reply_admin.title, iconURL: config.reply_admin.iconURL })
+      .setDescription(`**ข้อมูลผู้ส่ง:** <@${interaction.member?.id}>\n**ลิงค์สตรีม:** ${submissionData.สตรีมลิงค์}\n**ชื่อ OC & IC:** ${submissionData["ชื่อ OC"]} & ${submissionData["ชื่อ IC"]}\n**อายุ:** ${submissionData["อายุ OC IC"]}\n**เฟส IC:** [Link](${submissionData["เฟส IC"]})`)
+      .setColor("Green")
+      .setTimestamp()
+    ],
+    components: [new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId("addRoles").setLabel("✅ ยืนยัน").setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId("Cancel").setLabel("❌ ยกเลิก").setStyle(ButtonStyle.Danger)
+    )]
+  });
+}
 
 client.login(config.token);
